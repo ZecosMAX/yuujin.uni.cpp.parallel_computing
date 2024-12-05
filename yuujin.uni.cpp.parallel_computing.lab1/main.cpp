@@ -16,6 +16,9 @@
 #include "thread_matrix.h"
 #include "omp_matrix.h"
 
+using namespace std;
+using namespace std::chrono;
+
 int main()
 {
 	srand(time(NULL));
@@ -23,7 +26,7 @@ int main()
 	bool printResults = true;
 
 	Matrix m1 = generate_matrix({ 1500, 1300 });
-	Matrix m2 = generate_matrix({ 1300, 1500 });
+	Matrix m2 = generate_matrix({ 1300, 2500 });
 	 
 	//Matrix m1 = generate_matrix({ 2, 3 });
 	//Matrix m2 = generate_matrix({ 3, 5 });
@@ -34,38 +37,38 @@ int main()
 	CacheOptimizedMatrix c2 = make_cache_matrix(m2);
 	CacheOptimizedMatrix c1 = make_cache_matrix(m1);
 
-	auto startSingleThread = std::chrono::high_resolution_clock::now();
+	auto startSingleThread = high_resolution_clock::now();
 	Matrix m3 = multiply_matrix_st(c1, c2);
-	auto endSingleThread = std::chrono::high_resolution_clock::now();
+	auto endSingleThread = high_resolution_clock::now();
 
-	auto startMultiThreaded = std::chrono::high_resolution_clock::now();
+	auto startMultiThreaded = high_resolution_clock::now();
 	Matrix m4 = multiply_matrix_mt(c1, c2);
-	auto endMultiThreaded = std::chrono::high_resolution_clock::now();
+	auto endMultiThreaded = high_resolution_clock::now();
 
-	auto startOpenMP = std::chrono::high_resolution_clock::now();
+	auto startOpenMP = high_resolution_clock::now();
 	Matrix m5 = multiply_matrix_omp(c1, c2);
-	auto endOpenMP = std::chrono::high_resolution_clock::now();
+	auto endOpenMP = high_resolution_clock::now();
 
 
 	if (printResults)
 	{
 		print_matrix(m1);
-		std::cout << "*" << std::endl;
+		cout << "*" << endl;
 		print_matrix(m2);
-		std::cout << "=" << std::endl;
+		cout << "=" << endl;
 		print_matrix(m3);
-		std::cout << "=" << std::endl;
+		cout << "=" << endl;
 		print_matrix(m4);
-		std::cout << "=" << std::endl;
+		cout << "=" << endl;
 		print_matrix(m5);
 	}
 
 
-	auto durationSt = std::chrono::duration_cast<std::chrono::microseconds>(endSingleThread - startSingleThread);
-	auto durationMt = std::chrono::duration_cast<std::chrono::microseconds>(endMultiThreaded - startMultiThreaded);
-	auto durationMp = std::chrono::duration_cast<std::chrono::microseconds>(endOpenMP - startOpenMP);
+	auto durationSt = duration_cast<microseconds>(endSingleThread - startSingleThread);
+	auto durationMt = duration_cast<microseconds>(endMultiThreaded - startMultiThreaded);
+	auto durationMp = duration_cast<microseconds>(endOpenMP - startOpenMP);
 	
-	std::cout << "Single-threaded duration: " << durationSt.count() / 1000.0 << "ms" << std::endl;
-	std::cout << "Milti-threaded duration : " << durationMt.count() / 1000.0 << "ms (x" << std::fixed << std::setprecision(2) << ((double)durationSt.count() / durationMt.count()) << " speed up)" << std::endl;
-	std::cout << "OpenMP-threaded duration: " << durationMp.count() / 1000.0 << "ms (x" << std::fixed << std::setprecision(2) << ((double)durationSt.count() / durationMp.count()) << " speed up)" << std::endl;
+	cout << "Single-threaded duration: " << durationSt.count() / 1000.0 << "ms" << endl;
+	cout << "Milti-threaded duration : " << durationMt.count() / 1000.0 << "ms (x" << fixed << setprecision(2) << ((double)durationSt.count() / durationMt.count()) << " speed up)" << endl;
+	cout << "OpenMP-threaded duration: " << durationMp.count() / 1000.0 << "ms (x" << fixed << setprecision(2) << ((double)durationSt.count() / durationMp.count()) << " speed up)" << endl;
 }
