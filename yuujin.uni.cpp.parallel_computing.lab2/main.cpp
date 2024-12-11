@@ -24,7 +24,7 @@ int main()
 
 	srand(time(NULL));
 	double numbers[12] = { 2, 1, -1, 8, -3, -1, 2, -11, -2, 1, 2, -3};
-	Matrix m1 = generate_matrix({ 3000, 3001 }); //{ numbers, { 3, 4 } };
+	Matrix m1 = generate_matrix({ 1000, 1001 }); //{ numbers, { 3, 4 } };
 
 	if (m1.size.m > 5 || m1.size.n > 6)
 		printResults = false;

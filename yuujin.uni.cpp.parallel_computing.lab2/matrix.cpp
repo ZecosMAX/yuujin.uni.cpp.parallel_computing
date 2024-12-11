@@ -95,7 +95,7 @@ Matrix make_upper_triangle_matrix(const Matrix& matrix)
 			double item_to_null = get_matrix_item(result, changeRow, row);
 			double coeffitient = item_to_null / item;
 
-			for (int col = 0; col < result.size.n; col++)
+			for (int col = row; col < result.size.n; col++)
 			{
 				result.container[changeRow * result.size.n + col] -= coeffitient * result.container[row * result.size.n + col];
 			}
@@ -123,7 +123,7 @@ Matrix solve_gauss(const Matrix& matrix)
 			double item_to_null = get_matrix_item(result, changeRow, row);
 			double coeffitient = item_to_null / item;
 
-			for (int col = 0; col < result.size.n; col++)
+			for (int col = row; col < result.size.n; col++)
 			{
 				result.container[changeRow * result.size.n + col] -= coeffitient * result.container[row * result.size.n + col];
 			}

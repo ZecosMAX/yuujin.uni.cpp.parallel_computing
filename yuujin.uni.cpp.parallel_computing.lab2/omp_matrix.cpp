@@ -21,10 +21,9 @@ Matrix make_upper_triangle_matrix_omp(const Matrix& matrix)
 			double item_to_null = result.container[changeRow * result.size.n + row]; // get_matrix_item(result, changeRow, row);
 			double coeffitient = item_to_null / item;
 
-#pragma omp parallel for
-#pragma vector always
-			for (int col = 0; col < result.size.n; col++)
+			for (int col = row; col < result.size.n; col++)
 			{
+#pragma vector always
 				result.container[changeRow * result.size.n + col] -= coeffitient * result.container[row * result.size.n + col];
 			}
 		}
@@ -52,10 +51,9 @@ Matrix solve_gauss_omp(const Matrix& matrix)
 			double item_to_null = result.container[changeRow * result.size.n + row]; // get_matrix_item(result, changeRow, row);
 			double coeffitient = item_to_null / item;
 
-#pragma omp parallel for
-#pragma vector always
-			for (int col = 0; col < result.size.n; col++)
+			for (int col = row; col < result.size.n; col++)
 			{
+#pragma vector always
 				result.container[changeRow * result.size.n + col] -= coeffitient * result.container[row * result.size.n + col];
 			}
 		}
@@ -63,7 +61,7 @@ Matrix solve_gauss_omp(const Matrix& matrix)
 		// normalize current row
 #pragma omp parallel for
 #pragma vector always
-		for (int col = 0; col < result.size.n; col++)
+		for (int col = row; col < result.size.n; col++)
 		{
 			result.container[row * result.size.n + col] /= item;
 		}
