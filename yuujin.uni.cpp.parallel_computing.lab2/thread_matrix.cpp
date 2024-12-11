@@ -23,8 +23,6 @@ void calculate_part_triangle_thread(double* resultContainer, double* sourceConta
 	{
 		double coeffitient = resultContainer[rowIndex * rowSize + pass] / resultContainer[pass * rowSize + pass];
 
-		// we cannot iterate here from col = row, because the ROW wasn't yet modified by 'previous' iterations
-		// so to keep the equality, we cannot assume that the previous items are 0, so we have to do them all
 		for (int col = pass; col < rowSize; col++)
 		{
 			resultContainer[rowIndex * rowSize + col] -= coeffitient * resultContainer[pass * rowSize + col];
@@ -34,11 +32,6 @@ void calculate_part_triangle_thread(double* resultContainer, double* sourceConta
 
 void calculate_part_gauss_thread(double* resultContainer, double* sourceContainer, int rowSize, int colSize, int threadIndex, int threadSize, int pass)
 {
-	// Same thing. But in reverse.
-	// Solving gauss is basically making a lower triangle from upper triangle (+ normalizing rows after)
-	// So... to get the result of a row #n, we need to subtract from result rows (n + 1), (n + 2)... all until row #M
-
-	// ...and subtract the [row] from every next row in a way, that makes the first coeffitient 0
 	for (int rowIndex = pass - 1 - threadIndex; rowIndex >= 0; rowIndex -= threadSize)
 	{
 		double coeffitient = resultContainer[rowIndex * rowSize + pass] / resultContainer[pass * rowSize + pass];
@@ -47,19 +40,7 @@ void calculate_part_gauss_thread(double* resultContainer, double* sourceContaine
 		{
 			resultContainer[rowIndex * rowSize + col] -= coeffitient * resultContainer[pass * rowSize + col];
 		}
-
-		if (pass == rowIndex + 1)
-		{
-			double item = resultContainer[rowIndex * rowSize + rowIndex];
-			// normalize current row
-			for (int col = 0; col < rowSize; col++)
-			{
-				resultContainer[rowIndex * rowSize + col] /= item;
-			}
-		}
 	}
-
-	
 }
 
 Matrix make_upper_triangle_matrix_mt(const Matrix& matrix) 
