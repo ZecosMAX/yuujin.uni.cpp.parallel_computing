@@ -17,7 +17,7 @@ int main()
 {
 	double start = 0.0;
 	double end = 100.0;
-	double step = 1e-6;
+	double step = 1e-7;
 
 	auto startSingleThread = high_resolution_clock::now();
 	double m3 = calc_integral_st(start, end, step);
