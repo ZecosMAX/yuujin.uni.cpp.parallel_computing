@@ -48,11 +48,11 @@ int main()
 		cout << "\033[1;33mProgram was launched WITHOUT mpiexec utility! -- MPI code NOT will run\n\033[0m" << endl;
 	}
 
-	//Matrix m1 = generate_matrix({ 1500, 1300 });
-	//Matrix m2 = generate_matrix({ 1300, 2500 });
+	Matrix m1 = generate_matrix({ 1500, 1300 });
+	Matrix m2 = generate_matrix({ 1300, 2500 });
 	 
-	Matrix m1 = generate_matrix({ 3, 2 });
-	Matrix m2 = generate_matrix({ 5, 3 });
+	//Matrix m1 = generate_matrix({ 2, 3 });
+	//Matrix m2 = generate_matrix({ 3, 2 });
 
 	if(mpi_rank == 0)
 		cout << "Running matrix-sizes of (" << m1.size.m << ", " << m1.size.n << ") and (" << m2.size.m << ", " << m2.size.n << ")" << endl;
@@ -67,8 +67,8 @@ int main()
 	// Свою "часть" данных процессы получат уже при выполнении далее
 	if (!is_mpiexec_mode() || mpi_rank == 0)
 	{
-		c1 = make_cache_matrix(m2);
-		c2 = make_cache_matrix(m1);
+		c1 = make_cache_matrix(m1);
+		c2 = make_cache_matrix(m2);
 	}
 	
 	auto startSingleThread = high_resolution_clock::now();
@@ -141,14 +141,15 @@ int main()
 		auto durationSt = duration_cast<microseconds>(endSingleThread - startSingleThread);
 		auto durationMt = duration_cast<microseconds>(endMultiThreaded - startMultiThreaded);
 		auto durationMp = duration_cast<microseconds>(endOpenMP - startOpenMP);
+		auto durationMpi = duration_cast<microseconds>(endMPI - startMPI);
 
 		cout << "Single-threaded duration: " << durationSt.count() / 1000.0 << "ms" << endl;
 		cout << "Milti-threaded duration : " << durationMt.count() / 1000.0 << "ms (x" << fixed << setprecision(2) << ((double)durationSt.count() / durationMt.count()) << " speed up)" << endl;
 		cout << "OpenMP-threaded duration: " << durationMp.count() / 1000.0 << "ms (x" << fixed << setprecision(2) << ((double)durationSt.count() / durationMp.count()) << " speed up)" << endl;
-		cout << "MPI-processed duration  : " << durationMp.count() / 1000.0 << "ms (x" << fixed << setprecision(2) << ((double)durationSt.count() / durationMp.count()) << " speed up)" << endl;
+		cout << "MPI-processed duration  : " << durationMpi.count() / 1000.0 << "ms (x" << fixed << setprecision(2) << ((double)durationSt.count() / durationMpi.count()) << " speed up)" << endl;
 	}
 
-	if(is_mpiexec_mode())
+	if (is_mpiexec_mode())
 		MPI_Finalize();
 }
 

@@ -25,24 +25,17 @@ void calculate_part_mpi(double* m1RowArr, double* m2ColArr, double* rRowArr, int
 
 Matrix multiply_matrix_mpi(const CacheOptimizedMatrix& m1, const CacheOptimizedMatrix& m2)
 {
-	// главная идея программирования под MPI заключается в том, что все процессы запускают один и тот же код
-	// необходмио согласовать ветвения так, чтобы главный процесс (rank == 0) выполнял помимо вычислений
-	// распределение данные, а так-же ввод/вывод из консольного окна, а остальные процесс только вычисление и получение данных
+	// главная идея программирования под MPI заключается в том, 
+	// что все процессы запускают один и тот же код
+	// необходмио согласовать ветвения так, 
+	// чтобы главный процесс (rank == 0) выполнял помимо вычислений
+	// распределение данных, а так-же ввод/вывод из консольного окна, 
+	// а остальные процесс только вычисление и получение данных
 
 	int rank;
 	int size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-	bool terminate = false;
-	
-
-	MPI_Bcast(
-		&terminate,
-		1,
-		MPI_C_BOOL,
-		0,
-		MPI_COMM_WORLD);
 
 	if (m1.rowMajorMatrix.size.n != m2.rowMajorMatrix.size.m && rank == 0)
 	{
@@ -174,19 +167,10 @@ Matrix multiply_matrix_mpi(const CacheOptimizedMatrix& m1, const CacheOptimizedM
     
 
 	// Сбор результатов на процессе 0
-	if (true)
-	{
-
-		MPI_Gatherv(
-			&localMatrixContainter[row_start * p + 0], (row_end - row_start) * p, MPI_DOUBLE, // Отправляемые данные
-			resultMatrixContainter, counts, offsets, MPI_DOUBLE,  // Буфер для приема
-			0, MPI_COMM_WORLD);
-
-		if(rank == 0)
-			std::cout << "Process [" << rank << "/" << size << "]: Results: " << resultMatrixContainter[0] << std::endl;
-
-		//MPI_Barrier(MPI_COMM_WORLD);
-	}
+	MPI_Gatherv(
+		&localMatrixContainter[row_start * p + 0], (row_end - row_start)* p, MPI_DOUBLE, // Отправляемые данные
+		resultMatrixContainter, counts, offsets, MPI_DOUBLE,  // Буфер для приема
+		0, MPI_COMM_WORLD);
 
 	if (rank != 0)
 	{
